@@ -1,5 +1,6 @@
 # Process data for use in PyTorch for prediction, upload to Hugging Face
 from datasets import load_dataset, Dataset, DatasetDict
+import os
 
 # Consume train and test datasets, produce tuple of processed train and test datasets
 def prediction_data_processor(train, test) -> tuple:
@@ -48,4 +49,4 @@ print(f"Test samples: {len(test)}")
 
 # Upload to Hugging Face
 processed_dataset = DatasetDict({"train": Dataset.from_list(train), "test": Dataset.from_list(test)})
-processed_dataset.push_to_hub("Ecoaetix/uFRED-predict")
+processed_dataset.push_to_hub("Ecoaetix/uFRED-predict", token=os.getenv("HF_TOKEN"))
