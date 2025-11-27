@@ -9,9 +9,9 @@ class Model(nn.Module):
     ...
 
 # Consume processing function, batch size, produce tuple of train and test dataloaders (train, test)
-def get_dataloaders(process_function: function = None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
+def get_dataloaders(dataset_name: str, process_function: None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
     # Load and sort dataset
-    dataset = load_dataset("Ecoaetix/uFRED")
+    dataset = load_dataset(dataset_name)
     dataset = dataset.sort(["sequence_id", "frame_id"])
     # Process dataset
     train = dataset["train"]
@@ -25,42 +25,7 @@ def get_dataloaders(process_function: function = None, batch_size: int = None, s
 
     return train_loader, test_loader
 
-# Consume train and test datasets, produce tuple of processed train and test datasets
-def prediction_data_processor(train, test) -> tuple:
-    # Remove images from dataset for drone prediction
-    train = train.remove_columns(["rgb_image", "event_image"])
-    test = test.remove_columns(["rgb_image", "event_image"])
-    # Process sequences
-    train = process_sequence(train)
-    test = process_sequence(test)
-    # Process track_ids
-    train = process_track_ids(train)
-    test = process_track_ids(test)
-    # Return processed datasets
-    return train, test
-    
-# Consume dataset, produce list of sequences
-def process_sequence(dataset):
-        result = []
-        for sequence_id in dataset["sequence_id"].unique():
-            sequence = dataset.filter(lambda x: x["sequence_id"] == sequence_id)
-            sequence = sequence.sort("frame_id")
-            result.append(sequence)
-        return result
-
-# Consume dataset, produce list of sequences grouped by track_id
-def process_track_ids(dataset):
-    result = []
-    for sequence in dataset:
-        for track_id in sequence["track_id"].unique():
-            if track_id == -1:
-                continue
-            track = sequence.filter(lambda x: x["track_id"] == track_id or x["track_id"] == -1)
-            track = track.sort("frame_id")
-            result.append(track)
-    return result
-
-test, train = get_dataloaders(prediction_data_processor, shuffle=True)
+test, train = get_dataloaders("Ecoaetix/uFRED", shuffle=True)
 print("Test set:")
 print(next(iter(test)))
 print("Train set:")
