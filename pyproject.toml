@@ -1,0 +1,10 @@
+[project]
+name = "model"
+version = "0.1.0"
+description = "A project for training AI models on the uFRED dataset"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "datasets>=4.4.1",
+    "torch==2.2.0",
+]
