@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import os
 
 class Model(nn.Module):
     def __init__(self, Np: int, Nf: int, hidden_dim: int = 128, num_layers: int = 2, dropout: float = 0.1):
@@ -19,7 +20,10 @@ class Model(nn.Module):
 # Consume processing function, batch size, produce tuple of train and test dataloaders (train, test)
 def get_dataloaders(dataset_name: str, process_function = None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
     # Load and sort dataset
-    dataset = load_dataset(dataset_name)
+    if os.getenv("HF_TOKEN") is not None:
+        dataset = load_dataset(dataset_name, token=os.getenv("HF_TOKEN"))
+    else:
+        dataset = load_dataset(dataset_name)
     # Process dataset
     train = dataset["train"]
     test = dataset["test"]
@@ -32,7 +36,7 @@ def get_dataloaders(dataset_name: str, process_function = None, batch_size: int 
 
     return train_loader, test_loader
 
-test, train = get_dataloaders("Ecoaetix/uFRED-predict", shuffle=True)
+test, train = get_dataloaders("Ecoaetix/uFRED-predict-0.4", shuffle=True)
 print("Test set:")
 print(next(iter(test)))
 print("Train set:")
