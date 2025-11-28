@@ -55,14 +55,17 @@ def process_positive_examples(dataset, Np: int, Nf: int, stride: int):
 
     for track in dataset:
         bboxes = track["bounding_box"]
-        # Sliding window with stride
-        for start_idx in range(0, len(bboxes) - window_size + 1, stride):
-            window_bboxes = bboxes[start_idx:start_idx + window_size]
-            # Check if all bboxes in window are non-empty
-            all_non_empty = all(
-                bbox is not None
-                for bbox in window_bboxes
-            )
+        i = 0
+        while i <= len(bboxes) - window_size:
+            # Check if current frame is non-empty
+            if not bboxes[i]:
+                i += 1
+                continue
+
+            # Check if all 24 frames starting from i are non-empty
+            window_bboxes = bboxes[i:i + window_size]
+            all_non_empty = all(bbox for bbox in window_bboxes)
+
             if all_non_empty:
                 # Split into past (first Np frames) and future (last Nf frames)
                 past_bboxes = list(window_bboxes[:Np])
@@ -71,6 +74,11 @@ def process_positive_examples(dataset, Np: int, Nf: int, stride: int):
                     'past': past_bboxes,
                     'future': future_bboxes
                 })
+                # Jump by stride
+                i += stride
+            else:
+                # Move to next frame
+                i += 1
     return result
     
 
