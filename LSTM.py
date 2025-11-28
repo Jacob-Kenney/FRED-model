@@ -17,10 +17,9 @@ class Model(nn.Module):
         self.classifier = nn.Linear(hidden_dim, Nf * 4)
 
 # Consume processing function, batch size, produce tuple of train and test dataloaders (train, test)
-def get_dataloaders(dataset_name: str, process_function: None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
+def get_dataloaders(dataset_name: str, process_function = None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
     # Load and sort dataset
     dataset = load_dataset(dataset_name)
-    dataset = dataset.sort(["sequence_id", "frame_id"])
     # Process dataset
     train = dataset["train"]
     test = dataset["test"]
