@@ -25,7 +25,7 @@ def get_dataloaders(dataset_name: str, process_function: None, batch_size: int =
 
     return train_loader, test_loader
 
-test, train = get_dataloaders("Ecoaetix/uFRED", shuffle=True)
+test, train = get_dataloaders("Ecoaetix/uFRED-predict", shuffle=True)
 print("Test set:")
 print(next(iter(test)))
 print("Train set:")
