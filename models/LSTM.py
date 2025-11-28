@@ -32,13 +32,12 @@ class Model(nn.Module):
         return out.view(batch_size, self.Nf, 4)
 
     def _extract_features(self, sample):
-        past_boxes = sample["past"]
         features = []
-        for i, box in enumerate(past_boxes):
+        for i, box in enumerate(sample):
             if i == 0:
                 features.append(self._get_kinematics(box, box))
                 continue
-            past_box = past_boxes[i - 1]
+            past_box = sample[i - 1]
             features.append(self._get_kinematics(past_box, box))
         return features
 
