@@ -37,15 +37,22 @@ def process_track_ids(dataset):
             result.append(track.to_dict())
     return result
 
+# Consume dataset, produce dataset with collapsed lists
+def process_lists(dataset):
+    result = []
+    for sequence in dataset:
+        sequence = sequence.to_dict()
+        sequence["sequence_id"] = sequence["sequence_id"][0]
+        sequence["track_id"] = (set(sequence["track_id"]) - {-1}).pop()
+        sequence["class"] = [c for c in sequence["class"] if c != ''][0]
+        result.append(sequence)
+    return result
 
-dataset = load_dataset("Ecoaetix/uFRED")
-dataset = dataset.sort(["sequence_id", "frame_id"])
-# Process dataset
-train = dataset["train"]
-test = dataset["test"]
-(train, test) = prediction_data_processor(train, test)
-print(f"Train samples: {len(train)}")
-print(f"Test samples: {len(test)}")
+dataset = load_dataset("Ecoaetix/uFRED-predict")
+# Collapse redundant lists
+train = process_lists(dataset["train"])
+test = process_lists(dataset["test"])
+
 
 # Upload to Hugging Face
 processed_dataset = DatasetDict({"train": Dataset.from_list(train), "test": Dataset.from_list(test)})
