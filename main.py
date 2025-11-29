@@ -19,7 +19,7 @@ def main():
     hidden_dim = 128
     num_layers = 2
     dropout = 0.1
-    batch_size = 32
+    batch_size = 256
     epochs = 50
     learning_rate = 1e-3
 
