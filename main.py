@@ -6,6 +6,9 @@ from data import get_dataloaders
 from training import train
 
 def main():
+    torch.set_num_threads(12)
+    
+    # Log
     print("="*60)
     print("Drone Position Prediction Training")
     print("="*60)
@@ -25,7 +28,8 @@ def main():
     train_loader, test_loader = get_dataloaders(
         dataset_name="Ecoaetix/uFRED-predict-0.4",
         batch_size=batch_size,
-        shuffle=True
+        shuffle=True,
+        num_workers=4
     )
     print(f"Train samples: {len(train_loader.dataset)}")
     print(f"Test samples: {len(test_loader.dataset)}")

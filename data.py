@@ -10,7 +10,7 @@ def collate_fn(batch):
     return past, future
 
 # Consume processing function, batch size, produce tuple of train and test dataloaders (train, test)
-def get_dataloaders(dataset_name: str, process_function = None, batch_size: int = None, shuffle: bool = False) -> tuple[DataLoader, DataLoader]:
+def get_dataloaders(dataset_name: str, process_function = None, batch_size: int = None, shuffle: bool = False, num_workers: int = 0) -> tuple[DataLoader, DataLoader]:
     # Load and sort dataset
     if os.getenv("HF_TOKEN") is not None:
         dataset = load_dataset(dataset_name, token=os.getenv("HF_TOKEN"))
@@ -23,7 +23,7 @@ def get_dataloaders(dataset_name: str, process_function = None, batch_size: int 
         (train, test) = process_function(train, test)
 
     # Create dataloaders
-    train_loader = DataLoader(train, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
-    test_loader = DataLoader(test, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
+    train_loader = DataLoader(train, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn, num_workers=num_workers)
+    test_loader = DataLoader(test, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=num_workers)
 
     return train_loader, test_loader
