@@ -7,7 +7,7 @@ from training import train
 
 def main():
     torch.set_num_threads(12)
-    
+
     # Log
     print("="*60)
     print("Drone Position Prediction Training")
@@ -16,9 +16,9 @@ def main():
     # Hyperparameters
     Np = 12  # Number of past frames
     Nf = 12  # Number of future frames to predict
-    hidden_dim = 128
-    num_layers = 2
-    dropout = 0.1
+    hidden_dim = 16
+    num_layers = 1
+    dropout = 0
     batch_size = 256
     epochs = 50
     learning_rate = 1e-3
@@ -64,7 +64,7 @@ def main():
         loss_function=loss_function,
         optimizer=optimizer,
         epochs=epochs,
-        save_path="weights/drone_stalker-0.2.pth"
+        save_path="weights/LSTM-0.3/drone_stalker-0.3.pth"
     )
 
     print("Training finished!")

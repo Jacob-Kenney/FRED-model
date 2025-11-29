@@ -1,0 +1,26 @@
+uFRED predict 0.4
+
+LSTM v0.2
+Architecture
+  - input: 12 past frames features (Np=12)
+  - output: 12 future frames bounding_box (Nf=12)
+  - LSTM
+    - input_size=4        (center_x, center_y, velocity_x, velocity_y)
+    - hidden_dim=128
+    - layers=2
+    - dropout=0.1
+  - Linear (classifier)
+    - input_size=128
+    - output_size= Nf * 4 = 48
+  - Total parameters: 206,896
+
+Training
+  - loss function: Smooth L1
+  - optimiser:     Adam
+  - learning rate: 1e-3
+  - epochs:        10           (stopped at 10 due to high learning rate)
+
+Results
+  - Loss: 11.96
+  - ADE:  29.8 px
+  - FDE:  46.4 px
