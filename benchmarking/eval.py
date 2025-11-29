@@ -42,7 +42,7 @@ def evaluate_model(weights_path: str, dataset_name: str = "Ecoaetix/uFRED-predic
     # Evaluate
     print("\nEvaluating on test set...")
     loss_function = nn.SmoothL1Loss()
-    loss, ade, fde = test_loop(model, test_loader, loss_function)
+    loss, ade, fde, miou = test_loop(model, test_loader, loss_function)
 
     # Final results
     print("\n" + "="*60)
@@ -51,9 +51,10 @@ def evaluate_model(weights_path: str, dataset_name: str = "Ecoaetix/uFRED-predic
     print(f"Test Loss: {loss:.6f}")
     print(f"Average Displacement Error (ADE): {ade:.2f} pixels")
     print(f"Final Displacement Error (FDE): {fde:.2f} pixels")
+    print(f"Mean IoU (mIoU): {miou:.4f}")
     print("="*60 + "\n")
 
-    return loss, ade, fde
+    return loss, ade, fde, miou
 
 if __name__ == "__main__":
     project_root = Path(__file__).parent.parent
