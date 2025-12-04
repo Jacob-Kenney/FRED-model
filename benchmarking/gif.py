@@ -20,8 +20,10 @@ def generate_gif(sequence: int, output_path: str, type: str = "rgb", weights_pat
     model.eval()
 
     # Load sequence from dataset
-    dataset = load_dataset("Ecoaetix/uFRED-nosplit",split="train", streaming=True)
-    sequence_data = sorted([row for row in dataset if row["sequence_id"] == sequence],key=lambda x: x["frame_id"])
+    dataset = load_dataset("Ecoaetix/uFRED-nosplit",split="train")
+    dataset = dataset.filter(lambda x: x["sequence_id"] == sequence, num_proc=4)
+    sequence_data = dataset.sort("frame_id", num_proc=4)
+    print("Sequence data loaded")
     
     # Generate predictions for each track
     tracks = set([row["track_id"] for row in sequence_data])
@@ -40,13 +42,14 @@ def generate_gif(sequence: int, output_path: str, type: str = "rgb", weights_pat
                 past_coordinates.append(frame["bounding_box"])
                 # Generate predictions and denormalize
                 if len(past_coordinates) == Np:
-                    if current_i not in predictions:
-                        predictions[current_i] = {}
+                    if frame["frame_id"] not in predictions:
+                        predictions[frame["frame_id"]] = {}
                     input_tensor = torch.tensor(past_coordinates, dtype=torch.float32).unsqueeze(0)
                     with torch.no_grad():
                         output = model(input_tensor).squeeze(0)
                         truth = track_data[current_i:current_i+Nf]
-                        predictions[current_i][track] = ([_denormalize_bbox(box) for box in output], [row["bounding_box"] for row in truth])
+                        predictions[frame["frame_id"]][track] = ([_denormalize_bbox(box) for box in output], [row["bounding_box"] for row in truth])
+    print("Predictions generated")
 
     # Generate GIF
     gif_frames = []
@@ -54,10 +57,10 @@ def generate_gif(sequence: int, output_path: str, type: str = "rgb", weights_pat
         # Generate frame
         image = row["rgb_image"] if type == "rgb" else row["event_image"]
         frame = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
-        # Ground truth rows needs to be 
-        gif_frames.append(_draw_frame(frame, row["bounding_box"], predictions[i]))
+        gif_frames.append(_draw_frame(frame, row["bounding_box"], predictions.get(row["frame_id"], {})))
         if max_frames and len(gif_frames) == max_frames:
             break
+    print("GIF frames generated")
     
     # Save GIF
     duration = int(1000 / fps)
@@ -68,6 +71,7 @@ def generate_gif(sequence: int, output_path: str, type: str = "rgb", weights_pat
         duration=duration,
         loop=0
     )
+    print("GIF saved")
 
 def _draw_frame(frame, current_bbox, predictions, img_width=1280, img_height=720):
     frame = frame.copy()
