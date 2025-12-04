@@ -21,8 +21,8 @@ def generate_gif(sequence: int, output_path: str, type: str = "rgb", weights_pat
 
     # Load sequence from dataset
     dataset = load_dataset("Ecoaetix/uFRED-nosplit",split="train")
-    dataset = dataset.filter(lambda x: x["sequence_id"] == sequence, num_proc=4)
-    sequence_data = dataset.sort("frame_id", num_proc=4)
+    dataset = dataset.filter(_filter, fn_kwargs={"sequence_id": sequence})
+    sequence_data = dataset.sort("frame_id")
     print("Sequence data loaded")
     
     # Generate predictions for each track
@@ -113,6 +113,9 @@ def _denormalize_bbox(bbox, img_width=1280, img_height=720):
         x2 * img_width,
         y2 * img_height
     ]
+
+def _filter(example, sequence_id):
+    return example["sequence_id"] == sequence_id
 
 if __name__ == "__main__":
     generate_gif(sequence=17, output_path="gifs/17.gif", type="event", weights_path="weights/LSTM-0.3/drone_stalker-0.3.pth", Np=12, Nf=12, hidden_dim=16, num_layers=1, dropout=0, max_frames=100, skip_frames=0)
