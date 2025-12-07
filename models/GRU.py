@@ -10,4 +10,15 @@ class Model(DroneStalker):
         self.classifier = nn.Linear(hidden_dim, Nf * 4)
 
     def forward(self, batch):
-        pass
+        batch_size = batch.shape[0]
+
+        # Extract features
+        features = []
+        for sample in batch:
+            features.append(self._extract_features(sample))
+        x = torch.tensor(features, dtype=torch.float32)
+
+        # Forward pass
+        gru_out, _ = self.gru(x)
+        out = self.classifier(gru_out[:, -1, :])
+        return out.view(batch_size, self.Nf, 4)

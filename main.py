@@ -30,7 +30,7 @@ def main():
         dataset_name="Ecoaetix/uFRED-predict-0.4",
         batch_size=batch_size,
         shuffle=True,
-        num_workers=4
+        num_workers=os.cpu_count()
     )
     print(f"Train samples: {len(train_loader.dataset)}")
     print(f"Test samples: {len(test_loader.dataset)}")
