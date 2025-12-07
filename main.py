@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from models.LSTM import Model
+from models.GRU import Model
 from data import get_dataloaders
 from training import train
+import os
 
 def main():
-    torch.set_num_threads(12)
+    torch.set_num_threads(os.cpu_count())
 
     # Log
     print("="*60)
@@ -64,7 +65,7 @@ def main():
         loss_function=loss_function,
         optimizer=optimizer,
         epochs=epochs,
-        save_path="weights/LSTM-0.3/drone_stalker-0.3.pth"
+        save_path="weights/GRU-0.1/drone_stalker-0.1.pth"
     )
 
     print("Training finished!")
