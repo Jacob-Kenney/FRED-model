@@ -3,3 +3,4 @@
 .venv/
 todo.txt
 tests/
+benchmarking/figures
