@@ -2,6 +2,10 @@ import os
 from datasets import load_dataset
 from torch.utils.data import DataLoader
 import torch
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Consume batch, produce tuple of past and future tensors
 def collate_fn(batch):
